@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+data/mpd/
+data/*.json
+data/*.npz
+artifacts/*.npz
+artifacts/*.faiss
+artifacts/*.pkl
+.ipynb_checkpoints/
+.DS_Store
