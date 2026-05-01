@@ -10,6 +10,7 @@ import numpy as np
 import scipy.sparse as sp
 
 from .als import train_als
+from .audio import build_audio_embeddings
 from .baselines import PopularityRecommender
 from .data import load_or_synthetic
 from .eval import evaluate_als, evaluate_popularity
@@ -25,6 +26,7 @@ def run(
     holdout_frac: float = 0.2,
     eval_sample: int = 500,
     seed: int = 0,
+    skip_audio: bool = False,
 ) -> dict:
     os.makedirs(ARTIFACT_DIR, exist_ok=True)
 
@@ -74,12 +76,21 @@ def run(
     }
     print(json.dumps(metrics, indent=2))
 
+    if not skip_audio:
+        print("[audio] Building content-based audio embeddings...")
+        audio_emb, audio_valid = build_audio_embeddings(ds.track_meta)
+    else:
+        audio_emb = np.zeros((ds.n_tracks, 1), dtype=np.float32)
+        audio_valid = np.zeros(ds.n_tracks, dtype=bool)
+
     print("Persisting artifacts...")
     np.savez(
         os.path.join(ARTIFACT_DIR, "factors.npz"),
         item_factors=als.item_factors,
         user_factors=als.user_factors,
         track_popularity=pop.track_popularity,
+        audio_embeddings=audio_emb,
+        audio_valid=audio_valid,
     )
     sp.save_npz(os.path.join(ARTIFACT_DIR, "train_matrix.npz"), train_matrix)
     with open(os.path.join(ARTIFACT_DIR, "catalog.pkl"), "wb") as f:

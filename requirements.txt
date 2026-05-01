@@ -7,3 +7,7 @@ faiss-cpu>=1.7.4
 tqdm>=4.66
 streamlit>=1.32
 plotly>=5.18
+librosa>=0.10
+soundfile>=0.12
+librosa>=0.10.1
+soundfile>=0.12
